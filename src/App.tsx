@@ -1,34 +1,69 @@
 import { useState } from "react";
-import reactLogo from "./assets/react.svg";
-import viteLogo from "/vite.svg";
+import TodoItem from "./components/TodoItem";
 
-function App() {
-  const [count, setCount] = useState(0);
+export type Todo = {
+  id: number;
+  text: string;
+  completed: boolean;
+};
+
+const App = () => {
+  const [newTodo, setNewTodo] = useState("");
+  const [todos, setTodos] = useState<Todo[]>([]);
+
+  const handleAdd = () => {
+    if (!newTodo.trim()) return;
+    setTodos([...todos, { id: Date.now(), text: newTodo, completed: false }]);
+    setNewTodo("");
+  };
+
+  const formattedDate = (date: number) => {
+    return new Date(date).toLocaleString("nl-NL");
+  };
+
+  const toggleComplete = (id: number) => {
+    setTodos(
+      todos.map((todo) =>
+        todo.id === id ? { ...todo, completed: !todo.completed } : todo
+      )
+    );
+  };
+
+  const deleteTodo = (id: number) => {
+    setTodos(todos.filter((todo) => todo.id !== id));
+  };
 
   return (
-    <>
-      <div>
-        <a href="https://vite.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
+    <main className=" bg-black h-screen w-screen py-16 flex flex-col justify-start items-center text-white">
+      <div className="max-w-1/2 w-full flex flex-col gap-4">
+        <h1 className="text-6xl text-white font-bold">✅ To Do</h1>
+        <div className="flex flex-row gap-2">
+          <input
+            type="text"
+            value={newTodo}
+            placeholder="Write your todo.."
+            onChange={(event) => setNewTodo(event?.target.value)}
+            onKeyDown={(event) => event.key === "Enter" && handleAdd()}
+            className="bg-white text-black w-ful rounded-xl w-full px-3"
+          />
+          <button className="bg-purple-500 p-3 rounded-xl" onClick={handleAdd}>
+            Add
+          </button>
+        </div>
+        <ul>
+          {todos.map((todo) => (
+            <TodoItem
+              key={todo.id}
+              todo={todo}
+              formattedDate={formattedDate}
+              toggleComplete={toggleComplete}
+              deleteTodo={deleteTodo}
+            />
+          ))}
+        </ul>
       </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.tsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
-    </>
+    </main>
   );
-}
+};
 
 export default App;
