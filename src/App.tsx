@@ -8,7 +8,7 @@ export type Todo = {
 };
 
 const App = () => {
-  const [newTodo, setNewTodo] = useState("");
+  const [newTodo, setNewTodo] = useState<string>("");
   const [todos, setTodos] = useState<Todo[]>([]);
 
   const handleAdd = () => {
@@ -26,6 +26,12 @@ const App = () => {
       todos.map((todo) =>
         todo.id === id ? { ...todo, completed: !todo.completed } : todo
       )
+    );
+  };
+
+  const editTodo = (id: number, newText: string) => {
+    setTodos(
+      todos.map((todo) => (todo.id === id ? { ...todo, text: newText } : todo))
     );
   };
 
@@ -58,6 +64,7 @@ const App = () => {
               formattedDate={formattedDate}
               toggleComplete={toggleComplete}
               deleteTodo={deleteTodo}
+              editTodo={editTodo}
             />
           ))}
         </ul>
