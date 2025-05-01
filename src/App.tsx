@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import TodoItem from "./components/TodoItem";
 
 export type Todo = {
@@ -9,7 +9,10 @@ export type Todo = {
 
 const App = () => {
   const [newTodo, setNewTodo] = useState<string>("");
-  const [todos, setTodos] = useState<Todo[]>([]);
+  const [todos, setTodos] = useState<Todo[]>(() => {
+    const saved = localStorage.getItem("todos");
+    return saved ? JSON.parse(saved) : [];
+  });
 
   const handleAdd = () => {
     if (!newTodo.trim()) return;
@@ -38,6 +41,10 @@ const App = () => {
   const deleteTodo = (id: number) => {
     setTodos(todos.filter((todo) => todo.id !== id));
   };
+
+  useEffect(() => {
+    localStorage.setItem("todos", JSON.stringify(todos));
+  }, [todos]);
 
   return (
     <main className=" bg-black h-screen w-screen py-16 flex flex-col justify-start items-center text-white">
